@@ -1,33 +1,20 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="UnitHud" src="project://database/Assets/UI/UnitHud.uxml?fileID=9197481963319205126&amp;guid=cfb48812f5cd30c4ea98510f2851ae32&amp;type=3#UnitHud" />
     <Style src="project://database/Assets/UI/BattleStyles.uss?fileID=7433441132597879392&amp;guid=84d95faca617bc845b8d65bac3770d52&amp;type=3#BattleStyles" />
     <ui:VisualElement name="Background" style="flex-grow: 1; background-color: rgba(56, 56, 56, 0); justify-content: flex-end; align-items: stretch;">
-        <ui:VisualElement name="EnemyHud" class="EnemyHud" style="justify-content: flex-start; flex-grow: 1; padding-left: 32px; padding-right: 32px; padding-top: 32px; padding-bottom: 32px;">
-            <ui:VisualElement name="EnemyHeader">
-                <ui:Label text="Name" display-tooltip-when-elided="true" name="enemyName" style="color: rgb(255, 255, 255); font-size: 77px;" />
-            </ui:VisualElement>
-            <ui:VisualElement name="EnemyHpBar" style="background-image: none; overflow: visible; height: 75px; -unity-background-scale-mode: stretch-to-fill; background-color: rgba(255, 255, 255, 0);">
-                <ui:VisualElement name="EnemyHpFill" style="height: 100%; background-color: rgba(147, 0, 0, 255); background-image: none; width: 50%; margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; position: relative;" />
-                <ui:VisualElement name="EnemyHpBorder" style="background-image: url(&apos;project://database/Assets/Sprites/UI/Bar.png?fileID=21300000&amp;guid=c8bbd02a88c2bbc41b7d7e50ec7b2aa7&amp;type=3#Bar&apos;); width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.1); position: absolute;" />
-            </ui:VisualElement>
+        <ui:VisualElement name="EnemyContainer" style="flex-grow: 1;">
+            <ui:Instance template="UnitHud" name="UnitHud" />
         </ui:VisualElement>
         <ui:VisualElement name="Controls" style="height: 956px; background-color: rgb(9, 16, 16); border-top-left-radius: 15px; border-bottom-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; align-items: stretch; justify-content: center;">
-            <ui:VisualElement name="ControlsContainer" style="flex-grow: 1; justify-content: center; align-items: center; margin-left: 50px; margin-right: 50px; margin-top: 50px; margin-bottom: 50px; padding-left: 50px; padding-right: 50px; padding-top: 50px; padding-bottom: 50px; background-color: rgba(26, 27, 37, 255);">
+            <ui:VisualElement name="ControlsContainer" style="flex-grow: 1; justify-content: center; align-items: center; margin-left: 50px; margin-right: 50px; margin-top: 50px; margin-bottom: 50px; padding-left: 50px; padding-right: 50px; padding-top: 50px; padding-bottom: 50px; background-color: rgb(26, 27, 37);">
                 <ui:VisualElement name="DialogueBox" style="flex-grow: 1; width: 100%; margin-left: 25px; margin-right: 25px; margin-top: 25px; margin-bottom: 25px; justify-content: flex-start; align-items: flex-start;">
-                    <ui:Label text="BlueCroc uses Chomp!" display-tooltip-when-elided="true" style="justify-content: flex-start; font-size: 32px; color: rgba(255, 255, 255, 255); align-items: auto;" />
+                    <ui:Label text="BlueCroc uses Chomp!" display-tooltip-when-elided="true" name="DialogueText" style="justify-content: flex-start; font-size: 32px; color: rgb(255, 255, 255); align-items: auto;" />
                 </ui:VisualElement>
                 <ui:Button text="Attack" display-tooltip-when-elided="true" name="AttackBtn" style="width: 244px; height: 77px; font-size: 32px; justify-content: flex-start; margin-bottom: 25px;" />
-                <ui:Button text="Defend" display-tooltip-when-elided="true" name="DefendBtn" style="width: 244px; height: 77px; font-size: 32px; justify-content: flex-start;" />
+                <ui:Button text="Heal" display-tooltip-when-elided="true" name="HealBtn" style="width: 244px; height: 77px; font-size: 32px; justify-content: flex-start;" />
             </ui:VisualElement>
             <ui:VisualElement name="PlayerContainer">
-                <ui:VisualElement name="PlayerHud" class="EnemyHud" style="justify-content: flex-start; flex-grow: 1; padding-left: 32px; padding-right: 32px; padding-top: 32px; padding-bottom: 32px;">
-                    <ui:VisualElement name="Header">
-                        <ui:Label text="Player HP" display-tooltip-when-elided="true" name="Name" style="color: rgb(255, 255, 255); font-size: 77px;" />
-                    </ui:VisualElement>
-                    <ui:VisualElement name="HpBar" style="background-image: none; overflow: visible; height: 75px; -unity-background-scale-mode: stretch-to-fill; background-color: rgba(255, 255, 255, 0);">
-                        <ui:VisualElement name="HpFill" style="height: 100%; background-color: rgb(147, 0, 0); background-image: none; width: 50%; margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; position: relative;" />
-                        <ui:VisualElement name="HpBorder" style="background-image: url(&apos;project://database/Assets/Sprites/UI/Bar.png?fileID=21300000&amp;guid=c8bbd02a88c2bbc41b7d7e50ec7b2aa7&amp;type=3#Bar&apos;); width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.1); position: absolute;" />
-                    </ui:VisualElement>
-                </ui:VisualElement>
+                <ui:Instance template="UnitHud" name="UnitHud" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

@@ -1,142 +1,177 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public enum BattleState { START, PLAYERTURN, ENEMYTURN, WON, LOST }
 
 public class BattleSystem : MonoBehaviour
 {
+    public GameObject playerPrefab;
+    public GameObject enemyPrefab;
 
-	public GameObject playerPrefab;
-	public GameObject enemyPrefab;
+    public Transform _Dynamic;
+    public Transform battleStation;
 
-	public Transform playerBattleStation;
-	public Transform enemyBattleStation;
+    Unit playerUnit;
+    Unit enemyUnit;
 
-	Unit playerUnit;
-	Unit enemyUnit;
+    public UIDocument battleHudDoc;
+    public BattleHud battleHud;
+    VisualElement rootHudEle;
+    VisualElement playerContainer;
+    VisualElement enemyContainer;
+    VisualElement controlsContainer;
 
-	public Text dialogueText;
+    public BattleState state;
+    
+    // UIElement CallBack functions
+     public void OnAttackBtn() {
+        if (state != BattleState.PLAYERTURN)
+            return;
 
-	public BattleHUD playerHUD;
-	public BattleHUD enemyHUD;
+        StartCoroutine(PlayerAttack());
+    }    
 
-	public BattleState state;
-
-    // Start is called before the first frame update
-    void Start()
+    private void OnHealBtn()
     {
-		state = BattleState.START;
-		StartCoroutine(SetupBattle());
+        if (state != BattleState.PLAYERTURN)
+            return;
+
+        StartCoroutine(PlayerHeal());
     }
 
-	IEnumerator SetupBattle()
-	{
-		GameObject playerGO = Instantiate(playerPrefab, playerBattleStation);
-		playerUnit = playerGO.GetComponent<Unit>();
+    void Start()
+    {
+        //set inital state
+        state = BattleState.START;
 
-		GameObject enemyGO = Instantiate(enemyPrefab, enemyBattleStation);
-		enemyUnit = enemyGO.GetComponent<Unit>();
+        //get the root UIElement
+        rootHudEle = battleHudDoc.rootVisualElement;
 
-		dialogueText.text = "A wild " + enemyUnit.unitName + " approaches...";
+        //set callbacks for the UI buttons
+        controlsContainer = rootHudEle.Q<VisualElement>("ControlsContainer");
+        var attackBtn = controlsContainer.Q<Button>("AttackBtn");
+        attackBtn.RegisterCallback<ClickEvent>(ev => OnAttackBtn());
 
-		playerHUD.SetHUD(playerUnit);
-		enemyHUD.SetHUD(enemyUnit);
+        var healBtn = controlsContainer.Q<Button>("HealBtn");
+        healBtn.RegisterCallback<ClickEvent>(ev => OnHealBtn());
 
-		yield return new WaitForSeconds(2f);
+        BattleFsm();
+    }
 
-		state = BattleState.PLAYERTURN;
-		PlayerTurn();
-	}
+    void BattleFsm() {
+        switch (state)
+        {
+            case BattleState.START:
+                StartCoroutine(SetupBattle());
+                break;
 
-	IEnumerator PlayerAttack()
-	{
-		bool isDead = enemyUnit.TakeDamage(playerUnit.damage);
+            case BattleState.PLAYERTURN:
+                PlayerTurn();
+                break;
 
-		enemyHUD.SetHP(enemyUnit.currentHP);
-		dialogueText.text = "The attack is successful!";
+            case BattleState.ENEMYTURN:
+                EnemyTurn();
+                break;
 
-		yield return new WaitForSeconds(2f);
+            case BattleState.WON:
+                WinBattle();
+                return;
 
-		if(isDead)
-		{
-			state = BattleState.WON;
-			EndBattle();
-		} else
-		{
-			state = BattleState.ENEMYTURN;
-			StartCoroutine(EnemyTurn());
-		}
-	}
+            case BattleState.LOST:
+                LoseBattle();
+                return;
+            default:
+                break;
+        }
+    }
+    
+    //Sets up the enemy and player UIs
+    IEnumerator SetupBattle()
+    {
+        var playerGO = Instantiate(playerPrefab, _Dynamic);
+        playerUnit = playerGO.GetComponent<Unit>();
 
-	IEnumerator EnemyTurn()
-	{
-		dialogueText.text = enemyUnit.unitName + " attacks!";
+        var enemyGO = Instantiate(enemyPrefab, battleStation);
+        enemyUnit = enemyGO.GetComponent<Unit>();
 
-		yield return new WaitForSeconds(1f);
+        rootHudEle = battleHudDoc.rootVisualElement;
+        battleHud.setUnitHud(playerUnit);
+        battleHud.setUnitHud(enemyUnit);
 
-		bool isDead = playerUnit.TakeDamage(enemyUnit.damage);
+        battleHud.SetDialogueText($"{enemyUnit.unitName} challenges you to learn math!");
 
-		playerHUD.SetHP(playerUnit.currentHP);
+        yield return new WaitForSeconds(2f);
+        state = BattleState.PLAYERTURN;
+        BattleFsm();
+    }
 
-		yield return new WaitForSeconds(1f);
+    //Enemy and player turns
+    private void EnemyTurn()
+    {        
+        StartCoroutine(EnemyAttack());
+    }
 
-		if(isDead)
-		{
-			state = BattleState.LOST;
-			EndBattle();
-		} else
-		{
-			state = BattleState.PLAYERTURN;
-			PlayerTurn();
-		}
+    private void PlayerTurn()
+    {
+        battleHud.SetDialogueText("Select an action:");
+    }
 
-	}
+    //Player and Enemy Attcks, each update the UI and call the BattleFSM
+    private IEnumerator PlayerAttack()
+    {
+        battleHud.SetDialogueText($"You deal {playerUnit.damage} damage to {enemyUnit.unitName}");
+        var isDead = enemyUnit.TakeDamage(playerUnit.damage);
+        battleHud.SetUnitHp(enemyUnit);
 
-	void EndBattle()
-	{
-		if(state == BattleState.WON)
-		{
-			dialogueText.text = "You won the battle!";
-		} else if (state == BattleState.LOST)
-		{
-			dialogueText.text = "You were defeated.";
-		}
-	}
+        if (isDead)
+            state = BattleState.WON;
+        else
+            state = BattleState.ENEMYTURN;
 
-	void PlayerTurn()
-	{
-		dialogueText.text = "Choose an action:";
-	}
+        yield return new WaitForSeconds(2f);
+        BattleFsm();
+    }
+    
+    private IEnumerator PlayerHeal()
+    {
+        const int healAmount = 2; //hardcoded heal for right now, will change later.
+        playerUnit.Heal(healAmount);
+        battleHud.SetUnitHp(playerUnit);
+        battleHud.SetDialogueText($"You heal for {healAmount} points");
+        
+        yield return new WaitForSeconds(2f);
 
-	IEnumerator PlayerHeal()
-	{
-		playerUnit.Heal(5);
+        state = BattleState.ENEMYTURN;
+        BattleFsm();
+    }
 
-		playerHUD.SetHP(playerUnit.currentHP);
-		dialogueText.text = "You feel renewed strength!";
+    private IEnumerator EnemyAttack()
+    {
+        battleHud.SetDialogueText($"{enemyUnit.unitName} uses Chomp!\n You take {enemyUnit.damage} damage.");
+        var isDead = playerUnit.TakeDamage(enemyUnit.damage);
+        battleHud.SetUnitHp(playerUnit);
 
-		yield return new WaitForSeconds(2f);
+        if (isDead)
+            state = BattleState.LOST;
+        else
+            state = BattleState.PLAYERTURN;
 
-		state = BattleState.ENEMYTURN;
-		StartCoroutine(EnemyTurn());
-	}
+        yield return new WaitForSeconds(2f);
 
-	public void OnAttackButton()
-	{
-		if (state != BattleState.PLAYERTURN)
-			return;
+        BattleFsm();
+    }
 
-		StartCoroutine(PlayerAttack());
-	}
+    //Win lose methods
+    private void LoseBattle()
+    {        
+        battleHud.SetDialogueText($"{enemyUnit.unitName} has defeated you!\n Game Over");
+    }
 
-	public void OnHealButton()
-	{
-		if (state != BattleState.PLAYERTURN)
-			return;
-
-		StartCoroutine(PlayerHeal());
-	}
-
+    private void WinBattle()
+    {
+        battleHud.SetDialogueText("Yay! You win!");
+    }
 }

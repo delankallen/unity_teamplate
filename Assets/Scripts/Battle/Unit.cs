@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
-
 	public string unitName;
 	public int unitLevel;
 
@@ -12,6 +11,8 @@ public class Unit : MonoBehaviour
 
 	public int maxHP;
 	public int currentHP;
+
+	public string unitUIContainer;
 
 	public bool TakeDamage(int dmg)
 	{
