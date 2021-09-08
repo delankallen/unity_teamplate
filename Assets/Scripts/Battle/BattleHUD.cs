@@ -7,7 +7,6 @@ using DG.Tweening;
 
 public class BattleHud : MonoBehaviour
 {
-
     private VisualElement _rootEle;
 
     VisualElement RootElement {
@@ -22,7 +21,19 @@ public class BattleHud : MonoBehaviour
             _rootEle = value;
         }
     }
-    VisualElement controlsContainer;
+    private VisualElement _controlsContainer;
+
+    VisualElement ControlContainer {
+        get {
+            if (_controlsContainer == null) {
+                _controlsContainer = RootElement.Q<VisualElement>("ControlsContainer");
+            }
+            return _controlsContainer;
+        }
+        set {
+            _controlsContainer = value;
+        }
+    }
 
     public void setUnitHud(Unit unit)
     {
@@ -37,7 +48,8 @@ public class BattleHud : MonoBehaviour
         return Length.Percent(hpPercent);
     }
 
-    private void SetUnitHp(VisualElement unitContainer, Unit unit) {
+    private void SetUnitHp(VisualElement unitContainer, Unit unit) 
+    {
         // StartCoroutine(HpDamageAnimation(unit, previousHp));
         unitContainer.Q<VisualElement>("UnitHpFill").style.width = GetHpPercent(unit.currentHP, unit.maxHP);
     }
@@ -48,9 +60,19 @@ public class BattleHud : MonoBehaviour
         SetUnitHp(unitContainer, unit);
     }
 
-    public void SetDialogueText(string text) {
-        var controlsContainer = RootElement.Q<VisualElement>("ControlsContainer");
-        controlsContainer.Q<Label>("DialogueText").text = text;
+    public void SetDialogueText(string text) 
+    {
+        ControlContainer.Q<Label>("DialogueText").text = text;
+    }
+
+    public void ShowResetBtn(Action onResetBtn)
+    {
+        ControlContainer.Q<Button>("AttackBtn").style.display = DisplayStyle.None;
+        ControlContainer.Q<Button>("HealBtn").style.display = DisplayStyle.None;
+        var resetBtn = ControlContainer.Q<Button>("ResetBtn");
+        resetBtn.style.display = DisplayStyle.Flex;
+
+        resetBtn.RegisterCallback<ClickEvent>(ev => onResetBtn());
     }
 
     //Tween Animations

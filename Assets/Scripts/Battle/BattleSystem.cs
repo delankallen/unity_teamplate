@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
 
 public enum BattleState { START, PLAYERTURN, ENEMYTURN, WON, LOST }
 public class BattleSystem : MonoBehaviour
@@ -42,6 +43,12 @@ public class BattleSystem : MonoBehaviour
         StartCoroutine(PlayerHeal());
     }
 
+    private void OnResetBtn() {
+        Debug.Log("Yo wat up I'm tryn to reset this here scene");
+
+        SceneManager.LoadScene("BattleScene");
+    }
+
     void Start()
     {
         //set inital state
@@ -53,10 +60,16 @@ public class BattleSystem : MonoBehaviour
         //set callbacks for the UI buttons
         controlsContainer = rootHudEle.Q<VisualElement>("ControlsContainer");
         var attackBtn = controlsContainer.Q<Button>("AttackBtn");
+        attackBtn.style.display = DisplayStyle.Flex;
         attackBtn.RegisterCallback<ClickEvent>(ev => OnAttackBtn());
 
         var healBtn = controlsContainer.Q<Button>("HealBtn");
+        healBtn.style.display = DisplayStyle.Flex;
         healBtn.RegisterCallback<ClickEvent>(ev => OnHealBtn());
+
+        var resetBtn = controlsContainer.Q<Button>("ResetBtn");
+        resetBtn.style.display = DisplayStyle.None;
+        resetBtn.RegisterCallback<ClickEvent>(ev => OnResetBtn());
 
         BattleFsm();
     }
@@ -126,14 +139,14 @@ public class BattleSystem : MonoBehaviour
         var previousHp = enemyUnit.currentHP;
         var isDead = enemyUnit.TakeDamage(playerUnit.damage);
         StartCoroutine(enemyUnit.DamageAnimation());
-        battleHud.SetUnitHp(enemyUnit);
-
-        yield return new WaitForSeconds(DIALOGUE_WAIT);
+        battleHud.SetUnitHp(enemyUnit);        
 
         if (isDead)
             state = BattleState.WON;
         else
             state = BattleState.ENEMYTURN;
+
+        yield return new WaitForSeconds(DIALOGUE_WAIT);
 
         BattleFsm();
     }
@@ -144,11 +157,12 @@ public class BattleSystem : MonoBehaviour
         var previousHp = playerUnit.currentHP;
         playerUnit.Heal(healAmount);
         battleHud.SetUnitHp(playerUnit);
-        battleHud.SetDialogueText($"You heal for {healAmount} points");
+        battleHud.SetDialogueText($"You heal for {healAmount} points");        
+
+        state = BattleState.ENEMYTURN;
         
         yield return new WaitForSeconds(DIALOGUE_WAIT);
 
-        state = BattleState.ENEMYTURN;
         BattleFsm();
     }
 
@@ -158,14 +172,14 @@ public class BattleSystem : MonoBehaviour
         var previousHp = playerUnit.currentHP;
         var isDead = playerUnit.TakeDamage(enemyUnit.damage);
         StartCoroutine(enemyUnit.AttackAnimation());
-        battleHud.SetUnitHp(playerUnit);       
-
-        yield return new WaitForSeconds(DIALOGUE_WAIT);
-
+        battleHud.SetUnitHp(playerUnit);
+        
         if (isDead)
             state = BattleState.LOST;
         else
             state = BattleState.PLAYERTURN;
+
+        yield return new WaitForSeconds(DIALOGUE_WAIT);
 
         BattleFsm();
     }
@@ -179,5 +193,6 @@ public class BattleSystem : MonoBehaviour
     private void WinBattle()
     {
         battleHud.SetDialogueText("Yay! You win!");
+        battleHud.ShowResetBtn(OnResetBtn);
     }
 }
