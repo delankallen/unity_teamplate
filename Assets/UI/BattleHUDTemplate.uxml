@@ -1,20 +1,20 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <ui:Template name="UnitHud" src="project://database/Assets/UI/UnitHud.uxml?fileID=9197481963319205126&amp;guid=cfb48812f5cd30c4ea98510f2851ae32&amp;type=3#UnitHud" />
     <Style src="project://database/Assets/UI/BattleStyles.uss?fileID=7433441132597879392&amp;guid=84d95faca617bc845b8d65bac3770d52&amp;type=3#BattleStyles" />
-    <ui:VisualElement name="Background" style="flex-grow: 1; background-color: rgba(56, 56, 56, 0); justify-content: flex-end; align-items: stretch;">
-        <ui:VisualElement name="EnemyContainer" style="flex-grow: 1;">
+    <ui:VisualElement name="Background" style="flex-grow: 1; background-color: rgba(56, 56, 56, 0); justify-content: flex-end; align-items: stretch; border-left-color: rgb(21, 34, 34); border-right-color: rgb(21, 34, 34); border-top-color: rgb(21, 34, 34); border-bottom-color: rgb(21, 34, 34);">
+        <ui:VisualElement name="EnemyContainer" style="flex-grow: 1; border-top-left-radius: 25px; border-bottom-left-radius: 25px; border-top-right-radius: 25px; border-bottom-right-radius: 25px;">
             <ui:Instance template="UnitHud" name="UnitHud" />
         </ui:VisualElement>
-        <ui:VisualElement name="Controls" style="height: 956px; background-color: rgb(9, 16, 16); border-top-left-radius: 15px; border-bottom-left-radius: 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px; align-items: stretch; justify-content: center;">
-            <ui:VisualElement name="ControlsContainer" style="flex-grow: 1; justify-content: center; align-items: center; margin-left: 50px; margin-right: 50px; margin-top: 50px; margin-bottom: 50px; padding-left: 50px; padding-right: 50px; padding-top: 50px; padding-bottom: 50px; background-color: rgb(26, 27, 37);">
-                <ui:VisualElement name="DialogueBox" style="flex-grow: 1; width: 100%; margin-left: 25px; margin-right: 25px; margin-top: 25px; margin-bottom: 25px; justify-content: flex-start; align-items: flex-start;">
-                    <ui:Label text="Battle dialogue text here" display-tooltip-when-elided="true" name="DialogueText" style="justify-content: flex-start; font-size: 45px; color: rgb(255, 255, 255); align-items: auto;" />
-                </ui:VisualElement>
-                <ui:Button text="Attack" display-tooltip-when-elided="true" name="AttackBtn" style="width: 244px; height: 77px; font-size: 32px; justify-content: flex-start; margin-bottom: 25px;" />
-                <ui:Button text="Heal" display-tooltip-when-elided="true" name="HealBtn" style="width: 244px; height: 77px; font-size: 32px; justify-content: flex-start;" />
-            </ui:VisualElement>
+        <ui:VisualElement name="Controls" style="height: 956px; background-color: rgb(15, 26, 26); border-top-left-radius: 25px; border-bottom-left-radius: 25px; border-top-right-radius: 25px; border-bottom-right-radius: 25px; align-items: stretch; justify-content: center;">
             <ui:VisualElement name="PlayerContainer">
                 <ui:Instance template="UnitHud" name="UnitHud" />
+            </ui:VisualElement>
+            <ui:VisualElement name="ControlsContainer" style="flex-grow: 1; justify-content: center; align-items: center; margin-left: 25px; margin-right: 25px; margin-top: 0; margin-bottom: 25px; padding-left: 25px; padding-right: 25px; padding-top: 0; padding-bottom: 25px; background-color: rgb(62, 89, 89); border-left-width: 25px; border-right-width: 25px; border-top-width: 25px; border-bottom-width: 25px; border-left-color: rgb(50, 73, 78); border-right-color: rgb(50, 73, 78); border-top-color: rgb(50, 73, 78); border-bottom-color: rgb(50, 73, 78); background-image: none; border-top-left-radius: 25px; border-bottom-left-radius: 25px; border-top-right-radius: 25px; border-bottom-right-radius: 25px;">
+                <ui:VisualElement name="DialogueBox" style="flex-grow: 1; width: 100%; margin-left: 25px; margin-right: 25px; margin-top: 25px; margin-bottom: 25px; justify-content: flex-start; align-items: flex-start; visibility: visible;">
+                    <ui:Label text="Battle dialogue text here" display-tooltip-when-elided="true" name="DialogueText" style="justify-content: flex-start; font-size: 45px; color: rgb(255, 255, 255); align-items: auto; visibility: visible; overflow: visible; display: flex;" />
+                </ui:VisualElement>
+                <ui:Button text="Attack" display-tooltip-when-elided="true" name="AttackBtn" style="width: 244px; height: 77px; font-size: 32px; justify-content: flex-start; margin-bottom: 25px; background-image: url(&apos;project://database/Assets/Sprites/UI/blue_button00.png?fileID=21300000&amp;guid=2872e28d83a24034191ede85ccd24b97&amp;type=3#blue_button00&apos;); background-color: rgba(32, 32, 32, 0); -unity-background-image-tint-color: rgb(255, 255, 255); border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0;" />
+                <ui:Button text="Heal" display-tooltip-when-elided="true" name="HealBtn" style="width: 244px; height: 77px; font-size: 32px; justify-content: flex-start; border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0; background-color: rgba(188, 188, 188, 0); background-image: url(&apos;project://database/Assets/Sprites/UI/green_button00.png?fileID=21300000&amp;guid=cb6f128260714d94abbbc2dae3f5c020&amp;type=3#green_button00&apos;);" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
