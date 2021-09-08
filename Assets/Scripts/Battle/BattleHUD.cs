@@ -3,48 +3,70 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
+using DG.Tweening;
 
 public class BattleHud : MonoBehaviour
 {
 
-    VisualElement rootEle;
+    private VisualElement _rootEle;
+
+    VisualElement RootElement {
+        get {
+            if (_rootEle == null)
+            {
+                _rootEle = GetComponent<UIDocument>().rootVisualElement;
+            }
+            return _rootEle;
+        }
+        set {
+            _rootEle = value;
+        }
+    }
     VisualElement controlsContainer;
-    // Start is called before the first frame update
-    void Start()
-    {
-        rootEle = GetComponent<UIDocument>().rootVisualElement;
-        controlsContainer = rootEle.Q<VisualElement>("ControlsContainer");
-        controlsContainer.Q<Button>("AttackBtn").RegisterCallback<ClickEvent>(ev => PlayerAttack());
-    }
-
-    private void PlayerAttack()
-    {
-
-    }
 
     public void setUnitHud(Unit unit)
     {
-        var unitContainer = rootEle.Q<VisualElement>(unit.unitUIContainer);
+        var unitContainer = RootElement.Q<VisualElement>(unit.unitUIContainer);
         unitContainer.Q<Label>("UnitName").text = unit.unitName;
         unitContainer.Q<Label>("UnitLevel").text = $"Lv. {unit.unitLevel}";
         
         SetUnitHp(unitContainer, unit);
     }
+    private Length GetHpPercent(int currentHP, int maxHP) {
+        float hpPercent = ((float)currentHP/(float)maxHP)*100f;
+        return Length.Percent(hpPercent);
+    }
 
     private void SetUnitHp(VisualElement unitContainer, Unit unit) {
-        float hpPercent = ((float)unit.currentHP/(float)unit.maxHP)*100f;
-
-        unitContainer.Q<VisualElement>("UnitHpFill").style.width = Length.Percent(hpPercent);
+        // StartCoroutine(HpDamageAnimation(unit, previousHp));
+        unitContainer.Q<VisualElement>("UnitHpFill").style.width = GetHpPercent(unit.currentHP, unit.maxHP);
     }
 
     public void SetUnitHp(Unit unit)
     {
-        var unitContainer = rootEle.Q<VisualElement>(unit.unitUIContainer);
+        var unitContainer = RootElement.Q<VisualElement>(unit.unitUIContainer);
         SetUnitHp(unitContainer, unit);
     }
 
     public void SetDialogueText(string text) {
-        var controlsContainer = rootEle.Q<VisualElement>("ControlsContainer");
+        var controlsContainer = RootElement.Q<VisualElement>("ControlsContainer");
         controlsContainer.Q<Label>("DialogueText").text = text;
     }
+
+    //Tween Animations
+
+    // public IEnumerator HpDamageAnimation(Unit unit, int previousHp) {
+    //     var unitContainer = RootElement.Q<VisualElement>(unit.unitUIContainer);
+    //     var hpFill = unitContainer.Q<VisualElement>("UnitHpFill");
+    //     float endWidth = (unit.currentHP/unit.maxHP)*100;
+    //     var wat = hpFill.style.width.value.value;
+    //     Debug.Log($"endwith: {endWidth}");
+    //     Debug.Log($"worldBoundWidth: {100f-wat}");
+
+
+    //     var hpReduce = DOTween.To(() => hpFill.style.width.value.value, x => hpFill.style.width = Length.Percent(x), endWidth, 5f).SetEase(Ease.Linear);
+    //     yield return hpReduce.WaitForCompletion();
+
+    //     var hpShake = unitContainer.transform;
+    // }
 }

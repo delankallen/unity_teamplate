@@ -5,9 +5,9 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 public enum BattleState { START, PLAYERTURN, ENEMYTURN, WON, LOST }
-
 public class BattleSystem : MonoBehaviour
 {
+    private const float DIALOGUE_WAIT = 1f;
     public GameObject playerPrefab;
     public GameObject enemyPrefab;
 
@@ -103,7 +103,7 @@ public class BattleSystem : MonoBehaviour
 
         battleHud.SetDialogueText($"{enemyUnit.unitName} challenges you to learn math!");
 
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(DIALOGUE_WAIT);
         state = BattleState.PLAYERTURN;
         BattleFsm();
     }
@@ -123,26 +123,30 @@ public class BattleSystem : MonoBehaviour
     private IEnumerator PlayerAttack()
     {
         battleHud.SetDialogueText($"You deal {playerUnit.damage} damage to {enemyUnit.unitName}");
+        var previousHp = enemyUnit.currentHP;
         var isDead = enemyUnit.TakeDamage(playerUnit.damage);
+        StartCoroutine(enemyUnit.DamageAnimation());
         battleHud.SetUnitHp(enemyUnit);
+
+        yield return new WaitForSeconds(DIALOGUE_WAIT);
 
         if (isDead)
             state = BattleState.WON;
         else
             state = BattleState.ENEMYTURN;
 
-        yield return new WaitForSeconds(2f);
         BattleFsm();
     }
     
     private IEnumerator PlayerHeal()
     {
         const int healAmount = 2; //hardcoded heal for right now, will change later.
+        var previousHp = playerUnit.currentHP;
         playerUnit.Heal(healAmount);
         battleHud.SetUnitHp(playerUnit);
         battleHud.SetDialogueText($"You heal for {healAmount} points");
         
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(DIALOGUE_WAIT);
 
         state = BattleState.ENEMYTURN;
         BattleFsm();
@@ -151,15 +155,17 @@ public class BattleSystem : MonoBehaviour
     private IEnumerator EnemyAttack()
     {
         battleHud.SetDialogueText($"{enemyUnit.unitName} uses Chomp!\n You take {enemyUnit.damage} damage.");
+        var previousHp = playerUnit.currentHP;
         var isDead = playerUnit.TakeDamage(enemyUnit.damage);
-        battleHud.SetUnitHp(playerUnit);
+        StartCoroutine(enemyUnit.AttackAnimation());
+        battleHud.SetUnitHp(playerUnit);       
+
+        yield return new WaitForSeconds(DIALOGUE_WAIT);
 
         if (isDead)
             state = BattleState.LOST;
         else
             state = BattleState.PLAYERTURN;
-
-        yield return new WaitForSeconds(2f);
 
         BattleFsm();
     }
