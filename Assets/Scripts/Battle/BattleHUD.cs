@@ -4,40 +4,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using DG.Tweening;
-
 public class BattleHud : MonoBehaviour
 {
-    private VisualElement _rootEle;
+    BaseUI baseUI;
 
-    VisualElement RootElement {
-        get {
-            if (_rootEle == null)
-            {
-                _rootEle = GetComponent<UIDocument>().rootVisualElement;
-            }
-            return _rootEle;
-        }
-        set {
-            _rootEle = value;
-        }
+    private void SetBaseUI() {        
+        baseUI = GetComponent<BaseUI>();
     }
-    private VisualElement _controlsContainer;
 
-    VisualElement ControlContainer {
-        get {
-            if (_controlsContainer == null) {
-                _controlsContainer = RootElement.Q<VisualElement>("ControlsContainer");
-            }
-            return _controlsContainer;
-        }
-        set {
-            _controlsContainer = value;
-        }
+    private BaseUI GetBaseUI() {
+        if (baseUI == null)
+            SetBaseUI();
+
+        return baseUI;
+    }
+
+    public void Start() {
+        baseUI = GetComponent<BaseUI>();
     }
 
     public void setUnitHud(Unit unit)
     {
-        var unitContainer = RootElement.Q<VisualElement>(unit.unitUIContainer);
+        var unitContainer = baseUI.RootElement.Q<VisualElement>(unit.unitUIContainer);
         unitContainer.Q<Label>("UnitName").text = unit.unitName;
         unitContainer.Q<Label>("UnitLevel").text = $"Lv. {unit.unitLevel}";
         
@@ -56,23 +44,27 @@ public class BattleHud : MonoBehaviour
 
     public void SetUnitHp(Unit unit)
     {
-        var unitContainer = RootElement.Q<VisualElement>(unit.unitUIContainer);
+        var unitContainer = baseUI.RootElement.Q<VisualElement>(unit.unitUIContainer);
         SetUnitHp(unitContainer, unit);
     }
 
     public void SetDialogueText(string text) 
     {
-        ControlContainer.Q<Label>("DialogueText").text = text;
+        GetBaseUI().ControlContainer.Q<Label>("DialogueText").text = text;
     }
 
     public void ShowResetBtn(Action onResetBtn)
     {
-        ControlContainer.Q<Button>("AttackBtn").style.display = DisplayStyle.None;
-        ControlContainer.Q<Button>("HealBtn").style.display = DisplayStyle.None;
-        var resetBtn = ControlContainer.Q<Button>("ResetBtn");
+        baseUI.ControlContainer.Q<Button>("AttackBtn").style.display = DisplayStyle.None;
+        baseUI.ControlContainer.Q<Button>("HealBtn").style.display = DisplayStyle.None;
+        var resetBtn = baseUI.ControlContainer.Q<Button>("ResetBtn");
         resetBtn.style.display = DisplayStyle.Flex;
 
         resetBtn.RegisterCallback<ClickEvent>(ev => onResetBtn());
+    }
+
+    public void LoadQuestion() {
+        
     }
 
     //Tween Animations
