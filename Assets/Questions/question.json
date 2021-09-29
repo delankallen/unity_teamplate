@@ -1,0 +1,26 @@
+{
+  "Text": "If 3x + 43 = 8 - 2x what is the Value of x ?",
+  "Choices": [
+    {
+      "Value": "-7",
+      "Answer": true
+    },
+    {
+      "Value": "-3",
+      "Answer": false
+    },
+    {
+      "Value": "4",
+      "Answer": false
+    },
+    {
+      "Value": "7",
+      "Answer": false
+    },
+    {
+      "Value": "12",
+      "Answer": false
+    }
+  ],
+  "Explanation": "3x + 43 = 8 - 2x\n-43   -43\n3x = -35 - 2x\n+ 2x     +2x\n5x = -35\n/5    /5\nx = -7"
+}

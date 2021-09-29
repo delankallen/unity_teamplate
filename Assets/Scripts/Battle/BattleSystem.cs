@@ -114,7 +114,7 @@ public class BattleSystem : MonoBehaviour
         battleHud.setUnitHud(playerUnit);
         battleHud.setUnitHud(enemyUnit);
 
-        battleHud.SetDialogueText($"{enemyUnit.unitName} challenges you to learn math!");
+        // battleHud.SetDialogueText($"{enemyUnit.unitName} challenges you to learn math!");
 
         yield return new WaitForSeconds(DIALOGUE_WAIT);
         state = BattleState.PLAYERTURN;
@@ -132,14 +132,14 @@ public class BattleSystem : MonoBehaviour
         battleHud.SetDialogueText("Select an action:");
     }
 
-    //Player and Enemy Attcks, each update the UI and call the BattleFSM
+    //Player and Enemy Attacks, each update the UI and call the BattleFSM
     private IEnumerator PlayerAttack()
     {
         battleHud.SetDialogueText($"You deal {playerUnit.damage} damage to {enemyUnit.unitName}");
         var previousHp = enemyUnit.currentHP;
         var isDead = enemyUnit.TakeDamage(playerUnit.damage);
         StartCoroutine(enemyUnit.DamageAnimation());
-        battleHud.SetUnitHp(enemyUnit);        
+        battleHud.SetUnitHp(enemyUnit);
 
         if (isDead)
             state = BattleState.WON;
